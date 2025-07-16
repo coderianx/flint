@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="200"/>
+</p>
+
 # 🔥 Flint — Minimal & Easy Web Framework for Go
 
 **Flint** is a lightweight and readable web framework for Go, built with simplicity and developer-friendliness in mind.  
