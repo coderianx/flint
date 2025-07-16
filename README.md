@@ -2,7 +2,7 @@
   <img src="assets/flint.jpg" width="200"/>
 </p>
 
-[![TikTok](https://img.shields.io/badge/TikTok-%70yazilim4313-black?logo=tiktok&logoColor=white)](https://www.tiktok.com/@yazilim4313)
+[![TikTok](https://img.shields.io/badge/TikTok-%40yazilim4313-black?logo=tiktok&logoColor=white)](https://www.tiktok.com/@yazilim4313)
 
 # 🔥 Flint — Minimal & Easy Web Framework for Go
 
