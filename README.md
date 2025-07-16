@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/flint.png" width="200"/>
+  <img src="assets/flint.jpg" width="200"/>
 </p>
 
 # 🔥 Flint — Minimal & Easy Web Framework for Go
