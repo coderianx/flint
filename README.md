@@ -20,4 +20,4 @@ Create web servers quickly with support for static files, HTML templates, JSON, 
 ## 📦 Installation
 
 ```bash
-go get github.com/grayvortex/Flint
+go get github.com/grayvort3x/Flint
