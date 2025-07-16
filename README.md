@@ -2,11 +2,7 @@
   <img src="assets/flint.jpg" width="200"/>
 </p>
 
-<p align="center">
-  <a href="https://www.tiktok.com/@yazilim4313">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/TikTok_logo.svg" width="40"/>
-  </a>
-</p>
+[![TikTok](https://img.shields.io/badge/TikTok-%40kullaniciadiniz-black?logo=tiktok&logoColor=white)](https://www.tiktok.com/@yazilim4313)
 
 # 🔥 Flint — Minimal & Easy Web Framework for Go
 
