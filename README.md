@@ -2,6 +2,12 @@
   <img src="assets/flint.jpg" width="200"/>
 </p>
 
+<p align="center">
+  <a href="https://www.tiktok.com/@yazilim4313">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/TikTok_logo.svg" width="40"/>
+  </a>
+</p>
+
 # 🔥 Flint — Minimal & Easy Web Framework for Go
 
 **Flint** is a lightweight and readable web framework for Go, built with simplicity and developer-friendliness in mind.  
