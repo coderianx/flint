@@ -2,6 +2,8 @@
   <img src="assets/flint.jpg" width="200"/>
 </p>
 
+[![Telegram](https://img.shields.io/badge/Telegram-Join-blue?logo=telegram)](https://t.me/kullanici_adi)
+
 [![TikTok](https://img.shields.io/badge/TikTok-%40yazilim4313-black?logo=tiktok&logoColor=white)](https://www.tiktok.com/@yazilim4313)
 
 # 🔥 Flint — Minimal & Easy Web Framework for Go
