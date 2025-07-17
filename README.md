@@ -2,8 +2,8 @@
   <img src="assets/flint.jpg" width="200"/>
 </p>
 
-[![Telegram Account](https://img.shields.io/badge/Telegram-Hesabım-blue?logo=telegram)](https://t.me/Grayvort3x)
-[![Telegram Channel](https://img.shields.io/badge/Telegram-Kanalım-blue?logo=telegram)](https://t.me/flint_official)
+[![Telegram Account](https://img.shields.io/badge/Telegram-Account-blue?logo=telegram)](https://t.me/Grayvort3x)
+[![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-blue?logo=telegram)](https://t.me/flint_framework)
 
 [![TikTok](https://img.shields.io/badge/TikTok-%40yazilim4313-black?logo=tiktok&logoColor=white)](https://www.tiktok.com/@yazilim4313)
 
