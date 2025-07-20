@@ -26,3 +26,8 @@ func Bcrypt(args ...string) string {
 	LogError("Bcrypt", "expects 1 or 2 arguments")
 	return ""
 }
+
+func CompareBcrypt(password, hashed string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(password))
+	return err == nil
+}
