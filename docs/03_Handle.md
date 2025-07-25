@@ -15,4 +15,6 @@ func main() {
         // Codes
     })
 
+    app.Run(":8000")
+
 ```
