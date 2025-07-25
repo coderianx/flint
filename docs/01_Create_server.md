@@ -12,6 +12,6 @@ func main() {
 }
 ```
 
-### * This code creates a new Flint serve
+### - This code creates a new Flint serve
 
 
