@@ -47,7 +47,6 @@ func (s *Server) Run(addr string) error {
 
 func (s *Server) Run(addr string) error {
 	fmt.Println("Flint-Server starting...")
-	fmt.Println(addr)
 	err := http.ListenAndServe(addr, s.router)
 
 	if err != nil {
