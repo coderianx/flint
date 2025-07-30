@@ -24,6 +24,12 @@ func (c *Context) UserAgent() string {
 	return c.Request.UserAgent()
 }
 
+func (c *Context) Send(html string) {
+	ctx.ResponseWriter.Header().Set("Content-Type", "text/html")
+	ctx.ResponseWriter.WriteHeader(200)
+	ctx.ResponseWriter.Write([]byte(html))
+}
+
 func (c *Context) FormBcrypt(key string) string {
 	password := c.FormData(key) // Formdan gelen veriyi al
 	cost := 12
