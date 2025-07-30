@@ -25,9 +25,9 @@ func (c *Context) UserAgent() string {
 }
 
 func (c *Context) Send(html string) {
-	ctx.ResponseWriter.Header().Set("Content-Type", "text/html")
-	ctx.ResponseWriter.WriteHeader(200)
-	ctx.ResponseWriter.Write([]byte(html))
+	c.ResponseWriter.Header().Set("Content-Type", "text/html")
+	c.ResponseWriter.WriteHeader(200)
+	c.ResponseWriter.Write([]byte(html))
 }
 
 func (c *Context) FormBcrypt(key string) string {
