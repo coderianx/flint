@@ -20,6 +20,12 @@ type Context struct {
 	Request *http.Request
 }
 
+func (c *Context) Send(html string) {
+	c.Writer.Header().Set("Content-Type", "text/html")
+	c.Writer.WriteHeader(200)
+	c.Writer.Write([]byte(html))
+}
+
 func (c *Context) UserAgent() string {
 	return c.Request.UserAgent()
 }
