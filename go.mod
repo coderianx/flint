@@ -1,4 +1,4 @@
-module github.com/grayvort3x/Flint
+module github.com/coderianx/Flint
 
 go 1.24.4
 
