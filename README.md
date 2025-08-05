@@ -34,13 +34,13 @@ package main
 import "github.com/coderianx/Flint"
 
 func main() {
-    app := flint.New()
+    app := flint.NewServer()
 
     app.Handle("/", func(c flint.Context) {
-        ctx.String("Hello from Flint!")
+        ctx.String(200, "Hello from Flint!")
     })
 
-    app.Listen(":8080")
+    app.Run(":8080")
 }
 ```
 
