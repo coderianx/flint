@@ -5,6 +5,8 @@
 <h1 align="center">Flint</h1>
 <p align="center">A blazing fast and lightweight web framework for Go.</p>
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/coderianx/Flint#section-readme.svg)](https://pkg.go.dev/github.com/coderianx/Flint)
+
 [![Docs](https://img.shields.io/badge/Web_site-Flint-%23098687?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://flintgo.netlify.app)
 
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-blue?logo=telegram)](https://t.me/flint_framework)
