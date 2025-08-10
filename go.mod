@@ -1,4 +1,4 @@
-module github.com/coderianx/Flint
+module github.com/coderianx/flint
 
 go 1.24.4
 
