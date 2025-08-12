@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "username": "user1_nUp",
+    "email": "hpmkg3@fakemail.com",
+    "password": "URuaWeoGnM",
+    "hashed_password": "1ac3f045a4941229fc2a5e759619998ca92320a38bdf2eaed6a38d956d0d16cc"
+  },
+  {
+    "id": 2,
+    "username": "user2_kPz",
+    "email": "xfaat@fakemail.com",
+    "password": "ygcVcgdE8m",
+    "hashed_password": "aba02894a5d94f9db4971cd2a9781f0b75021bf45d2a164d6dbd9bd7bec6fc4f"
+  },
+  {
+    "id": 3,
+    "username": "user3_2gU",
+    "email": "nrbialjy@example.com",
+    "password": "Gyu6EWnLdL",
+    "hashed_password": "cf5b9ec28bad64c8235356b7224effc0a5b85c17e818c613bba4c3b42fe225aa"
+  },
+  {
+    "id": 4,
+    "username": "user4_rxl",
+    "email": "jjxengq5@example.com",
+    "password": "czZSjsSURI",
+    "hashed_password": "d630a64a8a408d49f4377e87dd0976629c8475b0b98224b38455f0c5fe3656d9"
+  },
+  {
+    "id": 5,
+    "username": "user5_rUl",
+    "email": "iggpev60@fakemail.com",
+    "password": "T493DEjXe1",
+    "hashed_password": "5da3d7e96225a0253c106f2e419aa2f615035299bbb8d7075aa3f374a6da3821"
+  }
+]
