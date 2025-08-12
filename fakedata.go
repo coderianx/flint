@@ -54,46 +54,42 @@ func randomEmail() string {
 	return string(name) + domain
 }
 
-// FakeData fonksiyonu, sahte kullanıcı verisi oluşturup bir JSON dosyasına kaydeder
 func FakeData(filename string, count int) {
-	// Goroutine içinde çalışacak işlemi başlat
-	go func() {
-		rand.Seed(time.Now().UnixNano())
-		var users []FakeUser
+	rand.Seed(time.Now().UnixNano())
+	var users []FakeUser
 
-		for i := 1; i <= count; i++ {
-			username := "user" + strconv.Itoa(i) + "_" + randomString(3)
-			email := randomEmail()
+	for i := 1; i <= count; i++ {
+		username := "user" + strconv.Itoa(i) + "_" + randomString(3)
+		email := randomEmail()
 
-			rawPass := randomString(10)
-			hash := sha256.Sum256([]byte(rawPass))
-			hashedPass := hex.EncodeToString(hash[:])
+		rawPass := randomString(10)
+		hash := sha256.Sum256([]byte(rawPass))
+		hashedPass := hex.EncodeToString(hash[:])
 
-			user := FakeUser{
-				ID:        i,
-				Username:  username,
-				Email:     email,
-				Password:  rawPass,
-				HashedPwd: hashedPass,
-			}
-
-			users = append(users, user)
+		user := FakeUser{
+			ID:        i,
+			Username:  username,
+			Email:     email,
+			Password:  rawPass,
+			HashedPwd: hashedPass,
 		}
 
-		file, err := os.Create(filename)
-		if err != nil {
-			LogError("FakeData", err.Error())
-			return
-		}
-		defer file.Close()
+		users = append(users, user)
+	}
 
-		encoder := json.NewEncoder(file)
-		encoder.SetIndent("", "  ")
-		if err := encoder.Encode(users); err != nil {
-			LogError("FakeData", err.Error())
-			return
-		}
+	file, err := os.Create(filename)
+	if err != nil {
+		LogError("FakeData", err.Error())
+		return
+	}
+	defer file.Close()
 
-		fmt.Printf("✅ %d fake kullanıcı '%s' dosyasına yazıldı.\n", count, filename)
-	}()
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(users); err != nil {
+		LogError("FakeData", err.Error())
+		return
+	}
+
+	fmt.Printf("✅ %d fake kullanıcı '%s' dosyasına yazıldı.\n", count, filename)
 }
