@@ -3,12 +3,14 @@ package flint
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 )
 
 type Server struct {
-	router   *Router
-	notFound HandlerFunc
+	router      *Router
+	notFound    HandlerFunc
+	middlewares []HandlerFunc
 }
 
 func NewServer() *Server {
@@ -23,14 +25,22 @@ func NewServer() *Server {
 	return s
 }
 
+func (s *Server) Middleware(mw HandlerFunc) {
+	s.middlewares = append(s.middlewares, mw)
+}
+
 func (s *Server) Handle(path string, handler HandlerFunc) {
 	s.router.Handle(path, handler)
 }
 
-func (s *Server) Static(urlPath string, dir string) {
-	fs := http.FileServer(http.Dir(dir))
-	s.router.Handle(urlPath, func(ctx *Context) {
-		http.StripPrefix(urlPath, fs).ServeHTTP(ctx.Writer, ctx.Request)
+func (s *Server) Static(routePath, dir string) {
+	if !strings.HasSuffix(routePath, "/") {
+		routePath += "/"
+	}
+
+	s.router.Handle(routePath+"*", func(ctx *Context) {
+		filePath := strings.TrimPrefix(ctx.Request.URL.Path, routePath)
+		ctx.File(filepath.Join(dir, filePath))
 	})
 }
 
@@ -39,21 +49,26 @@ func (s *Server) SetNotFound(handler HandlerFunc) {
 	s.router.notFound = handler
 }
 
-func (s *Server) Run(addr string) error {
+func (s *Server) Run(addr ...string) error {
+	port := ":8080"
+	if len(addr) > 0 && strings.TrimSpace(addr[0]) != "" {
+		port = addr[0]
+	}
+
 	fmt.Println("Flint-Server starting...")
 
-	displayAddr := addr
-	if strings.HasPrefix(addr, ":") {
-		displayAddr = "http://localhost" + addr
-	} else if strings.HasPrefix(addr, "0.0.0.0") {
-		displayAddr = "http://" + strings.Replace(addr, "0.0.0.0", "localhost", 1)
+	displayAddr := port
+	if strings.HasPrefix(port, ":") {
+		displayAddr = "http://localhost" + port
+	} else if strings.HasPrefix(port, "0.0.0.0") {
+		displayAddr = "http://" + strings.Replace(port, "0.0.0.0", "localhost", 1)
 	} else {
-		displayAddr = "http://" + addr
+		displayAddr = "http://" + port
 	}
 
 	fmt.Println("Listening on", displayAddr)
 
-	err := http.ListenAndServe(addr, s.router)
+	err := http.ListenAndServe(port, s.router)
 	if err != nil {
 		LogError("Run()", err.Error())
 	}
