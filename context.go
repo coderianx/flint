@@ -6,6 +6,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"mime/multipart"
 	"net/http"
@@ -18,6 +19,39 @@ import (
 type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
+}
+
+func (c *Context) Query(key string) string {
+	return c.Request.URL.Query().Get(key)
+}
+
+func (c *Context) QueryInt(key string) (int, error) {
+	val := c.Query(key)
+	return strconv.Atoi(val)
+}
+
+func (c *Context) QueryIntDefault(key string, defaulVal int) int {
+	val := c.Query(key)
+	if val == "" {
+		return defaulVal
+	}
+	num, err := strconv.Atoi(val)
+	if err != nil {
+		return defaulVal
+	}
+	return num
+}
+
+func (c *Context) QueryFloat(key string, defaultVal float64) float64 {
+	val := c.Query(key)
+	if val == "" {
+		return defaultVal
+	}
+	num, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return defaultVal
+	}
+	return num
 }
 
 func (c *Context) FormBcrypt(key string) string {
@@ -88,6 +122,12 @@ func (c *Context) JSON(status int, data interface{}) {
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(status)
 	json.NewEncoder(c.Writer).Encode(data)
+}
+
+func (c *Context) Stringf(status int, text string, a ...any) {
+	c.Writer.Header().Set("Content-Type", "text/plain")
+	c.Writer.WriteHeader(status)
+	c.Writer.Write([]byte(fmt.Sprintf(text, a...)))
 }
 
 func (c *Context) String(status int, text string) {
@@ -252,15 +292,13 @@ func (c *Context) Default404() {
 <body>
     <div class="container">
         <!-- Add your own image here -->
-        <img src="assets/flint.jpg" alt="404 Error" class="error-image animation">
-        
+        <h1>Flint Framework Official</h1>
         <h1>404</h1>
         <h2>Page Not Found</h2>
         <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable. Please try to find what you need from our homepage.</p>
         
         <div class="buttons">
             <a href="/" class="btn">Return to Homepage</a>
-            <a href="https://t.me/Grayvort3x" class="btn btn-outline">Contact Support</a>
         </div>
     </div>
 
