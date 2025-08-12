@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coderianx & Flint Framework</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="flint.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <div class="header">
+            <h1>Coderianx</h1>
+            <div class="tagline">Creator of <span class="flint-highlight">Flint Framework</span></div>
+        </div>
+        
+        <div class="content-box">
+            <div class="language-tabs">
+                <div class="tab active" onclick="switchLanguage('tr')">Türkçe</div>
+                <div class="tab" onclick="switchLanguage('en')">English</div>
+            </div>
+            
+            <div class="content active" id="tr-content">
+                <p>Merhaba, ben Coderianx. <span class="flint-highlight">Flint</span>'i Go'da web geliştirmeyi daha basit, daha esnek ve daha sezgisel hale getirmek için oluşturdum. Mevcut çerçevelerin çoğu ya aşırı karmaşıktı ya da çok sınırlıydı.</p>
+                <p><span class="flint-highlight">Flint</span> ile hedefim, hem yeni başlayanlar hem de deneyimli geliştiriciler için hızlı, sezgisel, özellik açısından zengin ve minimal bir çözüm sunmak. Ayrıca, <span class="flint-highlight">Flint</span>'in dokümantasyonunu ve yapısını açık, öz ve geliştirici dostu olacak şekilde tasarladım, böylece gereksiz karmaşıklık olmadan geliştirmeye başlayabilirsiniz.</p>
+            </div>
+            
+            <div class="content" id="en-content">
+                <p>Hello, I'm Coderianx. I created <span class="flint-highlight">Flint</span> to make web development in Go simpler, more flexible, and more intuitive. Most existing frameworks were either overly complex or too limited.</p>
+                <p>My goal with <span class="flint-highlight">Flint</span> is to deliver a fast, intuitive, feature-rich, and minimal solution for both beginners and experienced developers. I've also designed <span class="flint-highlight">Flint</span>'s documentation and structure to be clear, concise, and developer-friendly, so you can start building without unnecessary complexity.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>Follow Flint Framework</div>
+            <div class="social-links">
+                <a href="https://github.com/coderianx/flint" class="social-link">
+                    <i class="fab fa-github"></i> Github
+                </a>
+                <a href="https://x.com/flintframework" class="social-link">
+                    <i class="fab fa-twitter"></i> Twitter</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Language switching
+        function switchLanguage(lang) {
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(lang + '-content').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Theme switching
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const icon = themeToggle.querySelector('i');
+
+        // Check for saved theme preference or use preferred color scheme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            html.setAttribute('data-theme', savedTheme);
+            updateIcon(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            html.setAttribute('data-theme', 'light');
+            updateIcon('light');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === 'light') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+    </script>
+</body>
+</html>
