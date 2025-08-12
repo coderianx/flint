@@ -10,7 +10,6 @@ import (
 type Server struct {
 	router      *Router
 	notFound    HandlerFunc
-	middlewares []HandlerFunc
 }
 
 func NewServer() *Server {
@@ -23,10 +22,6 @@ func NewServer() *Server {
 	}
 	s.router.notFound = s.notFound
 	return s
-}
-
-func (s *Server) Middleware(mw HandlerFunc) {
-	s.middlewares = append(s.middlewares, mw)
 }
 
 func (s *Server) Handle(path string, handler HandlerFunc) {
