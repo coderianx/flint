@@ -38,7 +38,7 @@ import "github.com/coderianx/Flint"
 func main() {
     app := flint.NewServer()
 
-    app.Handle("/", func(c flint.Context) {
+    app.Handle("/", func(ctx flint.Context) {
         ctx.String(200, "Hello from Flint!")
     })
 
