@@ -27,13 +27,13 @@ Flint is a simple and minimal backend framework written in Go, made for fast API
 ## 🚀 Quick Start
 
 ```bash
-go get github.com/coderianx/Flint
+go get github.com/coderianx/flint
 ```
 
 ```go
 package main
 
-import "github.com/coderianx/Flint"
+import "github.com/coderianx/flint"
 
 func main() {
     app := flint.NewServer()
