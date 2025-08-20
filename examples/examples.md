@@ -1,5 +1,0 @@
-**In this folder, you’ll find a collection of usage examples and small-scale real-world applications built with the Flint Framework. Each example is designed to demonstrate different features, architectural patterns, and best practices for building web applications using Flint.**
-
-**Whether you’re just getting started or exploring more advanced capabilities, these examples cover a range of scenarios — from basic “Hello World” setups to more complex mini-projects such as authentication systems, RESTful APIs, and template rendering.**
-
-**You can explore the code, run each project locally, and adapt the patterns to your own applications. The goal of this folder is to provide a hands-on learning resource, making it easier to understand Flint’s core concepts and how they fit into real development workflows.**
