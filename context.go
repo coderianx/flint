@@ -4,21 +4,28 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"crypto/sha512"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"math/rand"
 	"mime/multipart"
 	"net/http"
 	"strconv"
 	"sync"
 
+	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
+}
+
+func (c *Context) UserAgent() string {
+	return c.Request.UserAgent()
 }
 
 func (c *Context) Query(key string) string {
@@ -52,6 +59,30 @@ func (c *Context) QueryFloat(key string, defaultVal float64) float64 {
 		return defaultVal
 	}
 	return num
+}
+
+func (c *Context) FormArgon2(key string) string {
+	password := c.FormData(key) // formdan şifre al
+
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		LogError("FormArrgon2()", err.Error())
+		return ""
+	}
+
+	time := uint32(3)
+	memory := uint32(64 * 1024)
+	threads := uint8(4)
+	keyLen := uint32(32)
+
+	hash := argon2.IDKey([]byte(password), salt, time, memory, threads, keyLen)
+
+	encodedHash := fmt.Sprintf("$argon2id$v=19$m=%d,t=%d,p=%d$%s$%s",
+		memory, time, threads,
+		base64.RawStdEncoding.EncodeToString(salt),
+		base64.RawStdEncoding.EncodeToString(hash))
+
+	return encodedHash
 }
 
 func (c *Context) FormBcrypt(key string) string {
@@ -104,6 +135,10 @@ func (c *Context) FormSHA512(key string) string {
 
 func (c *Context) Delete() bool {
 	return c.Request.Method == http.MethodDelete
+}
+
+func (c *Context) Put() bool {
+	return c.Request.Method == http.MethodPut
 }
 
 func (c *Context) Post() bool {
@@ -160,6 +195,178 @@ func (c *Context) HTML(status int, tmplPath string, data interface{}) {
 	c.Writer.Header().Set("Content-Type", "text/html")
 	c.Writer.WriteHeader(status)
 	tmpl.Execute(c.Writer, data)
+}
+
+func (c *Context) Default405() {
+	c.Writer.WriteHeader(http.StatusMethodNotAllowed)
+	c.Writer.Write([]byte(`
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Method Not Allowed - 405 Error Flint</title>
+    <style>
+        :root {
+            --primary-color: #218c87;
+            --primary-dark: #1a6f6b;
+            --primary-light: #e8f4f3;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-image {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
+            object-fit: contain;
+        }
+        
+        h1 {
+            font-size: 5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #666;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-color);
+            margin: 0 10px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 140, 135, 0.3);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3.5rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .btn {
+                display: block;
+                margin: 10px auto;
+                width: 80%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Add your own image here -->
+        <h1>Flint Framework</h1>
+        <h1>405</h1>
+        <h2>Method not allowed</h2>
+        <p>This endpoint does not support this HTTP method. Please try another action.</p>
+        
+        <div class="buttons">
+            <a href="/" class="btn">Return to Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const image = document.querySelector('.error-image');
+            
+            // Pause animation on hover
+            image.addEventListener('mouseenter', function() {
+                this.style.animationPlayState = 'paused';
+            });
+            
+            // Resume animation when mouse leaves
+            image.addEventListener('mouseleave', function() {
+                this.style.animationPlayState = 'running';
+            });
+            
+            // Button click effect
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+    `))
 }
 
 func (c *Context) Default404() {
@@ -332,6 +539,16 @@ func (c *Context) Default404() {
 </body>
 </html>
 	`))
+}
+
+func (c *Context) Template405(templatePath string, data ...any) {
+	var d any
+	if len(data) > 0 {
+		d = data[0]
+	} else {
+		d = map[string]any{}
+	}
+	c.HTML(http.StatusMethodNotAllowed, templatePath, d)
 }
 
 func (c *Context) Template404(templatePath string, data ...any) {
