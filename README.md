@@ -5,8 +5,6 @@
 <h1 align="center">Flint</h1>
 <p align="center">A blazing fast and lightweight web framework for Go.</p>
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/coderianx/Flint#section-readme.svg)](https://pkg.go.dev/github.com/coderianx/Flint)
-
 [![Docs](https://img.shields.io/badge/Web_site-Flint-%23098687?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://flintgo.netlify.app)
 
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-blue?logo=telegram)](https://t.me/flint_framework)
@@ -24,6 +22,12 @@
 
 Flint is a simple and minimal backend framework written in Go, made for fast API development with clean structure and easy usage. 
 
+## 🐾 Flinex
+<p align="center">
+  <img src="assets/flinex.png" alt="Flint Mascot" width="150"/>
+  <br>
+</p>
+
 ## 🚀 Quick Start
 
 ```bash
@@ -39,12 +43,17 @@ func main() {
     app := flint.NewServer()
 
     app.Handle("/", func(ctx flint.Context) {
-        ctx.String(200, "Hello from Flint!")
+        ctx.String("Hello from Flint!")
     })
 
     app.Run(":8080")
 }
 ```
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
