@@ -5,18 +5,20 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 type Server struct {
-	router      *Router
-	notFound    HandlerFunc
+	router   *Router
+	notFound HandlerFunc
 }
 
+// A new Flint Server is created.
 func NewServer() *Server {
 	s := &Server{
 		router: NewRouter(),
 	}
-	// Varsayılan 404
 	s.notFound = func(ctx *Context) {
 		ctx.Default404()
 	}
@@ -50,7 +52,9 @@ func (s *Server) Run(addr ...string) error {
 		port = addr[0]
 	}
 
-	fmt.Println("Flint-Server starting...")
+	boldWhite := color.New(color.FgWhite, color.Bold)
+	boldWhite.Println("Flint Server is Starting...")
+	fmt.Println("---------------------------")
 
 	displayAddr := port
 	if strings.HasPrefix(port, ":") {
@@ -61,7 +65,8 @@ func (s *Server) Run(addr ...string) error {
 		displayAddr = "http://" + port
 	}
 
-	fmt.Println("Listening on", displayAddr)
+	color.Red("Listening on %s", displayAddr)
+	color.Cyan("Port: %s", strings.TrimPrefix(port, ":"))
 
 	err := http.ListenAndServe(port, s.router)
 	if err != nil {
