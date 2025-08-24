@@ -1,0 +1,12 @@
+# v1.3.0 Release Notes
+
+## Features
+
+- new `Get` function.
+- new `Post` function.
+- new `Put` function.
+- new `Delete` function.
+
+## Bug Fixes
+
+- Flint stdlib incompatibility resolved.
