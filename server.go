@@ -3,7 +3,6 @@ package flint
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
@@ -14,7 +13,7 @@ type Server struct {
 	notFound HandlerFunc
 }
 
-// A new Flint Server is created.
+// Create a new flint server
 func NewServer() *Server {
 	s := &Server{
 		router: NewRouter(),
@@ -26,51 +25,58 @@ func NewServer() *Server {
 	return s
 }
 
+// Universal handler
 func (s *Server) Handle(path string, handler HandlerFunc) {
-	s.router.Handle(path, handler)
+	s.router.Handle(http.MethodGet, path, handler)
 }
 
+// GET
+func (s *Server) Get(path string, handler HandlerFunc) {
+	s.router.Handle(http.MethodGet, path, handler)
+}
+
+// POST
+func (s *Server) Post(path string, handler HandlerFunc) {
+	s.router.Handle(http.MethodPost, path, handler)
+}
+
+// PUT
+func (s *Server) Put(path string, handler HandlerFunc) {
+	s.router.Handle(http.MethodPut, path, handler)
+}
+
+// DELETE
+func (s *Server) Delete(path string, handler HandlerFunc) {
+	s.router.Handle(http.MethodDelete, path, handler)
+}
+
+// static file server
 func (s *Server) Static(routePath, dir string) {
 	if !strings.HasSuffix(routePath, "/") {
 		routePath += "/"
 	}
 
-	s.router.Handle(routePath+"*", func(ctx *Context) {
-		filePath := strings.TrimPrefix(ctx.Request.URL.Path, routePath)
-		ctx.File(filepath.Join(dir, filePath))
+	s.router.Handle(http.MethodGet, routePath+"*", func(ctx *Context) {
+		http.ServeFile(ctx.Writer, ctx.Request, dir+strings.TrimPrefix(ctx.Request.URL.Path, routePath))
 	})
 }
 
+// NotFound override
 func (s *Server) SetNotFound(handler HandlerFunc) {
 	s.notFound = handler
 	s.router.notFound = handler
 }
 
+// Server çalıştır
 func (s *Server) Run(addr ...string) error {
 	port := ":8080"
 	if len(addr) > 0 && strings.TrimSpace(addr[0]) != "" {
 		port = addr[0]
 	}
 
-	boldWhite := color.New(color.FgWhite, color.Bold)
-	boldWhite.Println("Flint Server is Starting...")
+	color.New(color.FgWhite, color.Bold).Println("Flint Server is Starting...")
 	fmt.Println("---------------------------")
+	color.Red("Listening on http://localhost%s", port)
 
-	displayAddr := port
-	if strings.HasPrefix(port, ":") {
-		displayAddr = "http://localhost" + port
-	} else if strings.HasPrefix(port, "0.0.0.0") {
-		displayAddr = "http://" + strings.Replace(port, "0.0.0.0", "localhost", 1)
-	} else {
-		displayAddr = "http://" + port
-	}
-
-	color.Red("Listening on %s", displayAddr)
-	color.Cyan("Port: %s", strings.TrimPrefix(port, ":"))
-
-	err := http.ListenAndServe(port, s.router)
-	if err != nil {
-		LogError("Run()", err.Error())
-	}
-	return err
+	return http.ListenAndServe(port, s.router)
 }
