@@ -7,29 +7,40 @@ import (
 type HandlerFunc func(ctx *Context)
 
 type Router struct {
-	routes   map[string]HandlerFunc
+	routes   map[string]map[string]HandlerFunc // method -> path -> handler
 	notFound HandlerFunc
 }
 
 func NewRouter() *Router {
 	return &Router{
-		routes:   make(map[string]HandlerFunc),
+		routes:   make(map[string]map[string]HandlerFunc),
 		notFound: nil,
 	}
 }
 
-func (r *Router) Handle(path string, handler HandlerFunc) {
-	r.routes[path] = handler
+// Tüm methodlar için
+func (r *Router) Handle(method, path string, handler HandlerFunc) {
+	if r.routes[method] == nil {
+		r.routes[method] = make(map[string]HandlerFunc)
+	}
+	r.routes[method][path] = handler
 }
 
+// stdlib uyumu: ServeHTTP
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if handler, ok := r.routes[req.URL.Path]; ok {
-		ctx := &Context{Writer: w, Request: req}
-		handler(ctx)
-	} else if r.notFound != nil {
+	if handlers, ok := r.routes[req.Method]; ok {
+		if handler, ok := handlers[req.URL.Path]; ok {
+			ctx := &Context{Writer: w, Request: req}
+			handler(ctx)
+			return
+		}
+	}
+
+	if r.notFound != nil {
 		ctx := &Context{Writer: w, Request: req}
 		r.notFound(ctx)
-	} else {
-		http.NotFound(w, req)
+		return
 	}
+
+	http.NotFound(w, req)
 }
