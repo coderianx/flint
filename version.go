@@ -5,16 +5,16 @@ import (
 )
 
 func Version() {
-	const Version = "v1.3.0"
+	const Version = "v1.3.1"
 	fmt.Println("Flint Version:", Version)
 	fmt.Println("https://github.com/coderianx/flint")
 }
 
 func Info() {
-	const Version = "v1.3.0"
+	const Version = "v1.3.1"
 	const License = "MIT"
 	const Author = "Coderian"
-	const Release_date = "2025/08/24"
+	const Release_date = "2025/09/01"
 	fmt.Println("========== Flint Info ==========")
 	fmt.Println("Flint Version:", Version)
 	fmt.Println("License:", License)
