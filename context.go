@@ -1,3 +1,16 @@
+/*
+Package flint provides a lightweight HTTP web framework for building web applications
+with Go. It offers an easy-to-use Context struct for handling requests and responses,
+including JSON, HTML templates, file serving, form parsing, and HTTP method helpers.
+
+The Context struct allows developers to access query parameters, form data, user agents,
+and provides methods for sending various types of responses such as JSON, plain text,
+files, and HTML templates. It also includes helpers for common HTTP methods and redirects.
+
+Package flint aims to simplify web development by providing clear, concise, and efficient
+tools while keeping the API minimal and easy to understand.
+*/
+
 package flint
 
 import (
@@ -12,22 +25,32 @@ import (
 	"math/rand"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"sync"
 
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Context represents the context of a single HTTP request in the Flint framework.
+// It provides convenient access to the request data, query parameters, form values,
+// HTTP method checks, and response writers for sending various types of responses.
+// By using Context, developers can easily read input from the client, write output,
+// handle JSON, files, HTML templates, and manage redirects or errors in a structured way.
+
 type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
 }
 
+// UserAgent returns the User-Agent header from the request.
 func (c *Context) UserAgent() string {
 	return c.Request.UserAgent()
 }
 
+// Query returns the query parameter value for the given key.
 func (c *Context) Query(key string) string {
 	return c.Request.URL.Query().Get(key)
 }
@@ -35,6 +58,22 @@ func (c *Context) Query(key string) string {
 func (c *Context) QueryInt(key string) (int, error) {
 	val := c.Query(key)
 	return strconv.Atoi(val)
+}
+
+func (c *Context) QueryBool(key string, defaultVal bool) bool {
+	val := c.Query(key)
+	if val == "" {
+		return defaultVal
+	}
+
+	lower := strings.ToLower(val)
+	if lower == "true" || lower == "1" || lower == "yes" {
+		return true
+	} else if lower == "false" || lower == "0" || lower == "no" {
+		return false
+	}
+
+	return defaultVal
 }
 
 func (c *Context) QueryIntDefault(key string, defaulVal int) int {
@@ -61,6 +100,7 @@ func (c *Context) QueryFloat(key string, defaultVal float64) float64 {
 	return num
 }
 
+// It automatically hashes the data received from the form with Argon2.
 func (c *Context) FormArgon2(key string) string {
 	password := c.FormData(key) // formdan şifre al
 
@@ -85,6 +125,7 @@ func (c *Context) FormArgon2(key string) string {
 	return encodedHash
 }
 
+// Automatically hashes the data received from the form with Bcrypt
 func (c *Context) FormBcrypt(key string) string {
 	password := c.FormData(key) // Formdan gelen veriyi al
 	cost := 12
@@ -96,18 +137,27 @@ func (c *Context) FormBcrypt(key string) string {
 	return string(hash)
 }
 
+// Redirect sends an HTTP redirect to the specified URL with the given status code.
+// Commonly used status codes are 302 (Found), 301 (Moved Permanently), and 307/308.
 func (c *Context) Redirect(status int, url string) {
 	http.Redirect(c.Writer, c.Request, url, status)
 }
 
+// FormFile retrieves the uploaded file and its header from a multipart form
+// for the given form key. It returns the file, its header, and an error if
+// the file cannot be found or opened
 func (c *Context) FormFile(key string) (multipart.File, *multipart.FileHeader, error) {
 	return c.Request.FormFile(key)
 }
 
+// FormData returns the value of a form field for the given key.
+// It reads the data from POST or PUT form submissions.
 func (c *Context) FormData(key string) string {
 	return c.Request.FormValue(key)
 }
 
+// FormInt returns the value of a form field as an integer for the given key.
+// If the conversion fails, it logs the error and returns 0.
 func (c *Context) FormInt(key string) int {
 	val := c.FormData(key)
 	num, err := strconv.Atoi(val)
@@ -118,53 +168,97 @@ func (c *Context) FormInt(key string) int {
 	return num
 }
 
+// Hashes the data received from the form with MD5 and returns it.
 func (c *Context) FormMD5(key string) string {
 	hash := md5.Sum([]byte(c.FormData(key)))
 	return hex.EncodeToString(hash[:])
 }
 
+// Hashes the data received from the form with Sha256 and returns it.
 func (c *Context) FormSHA256(key string) string {
 	hash := sha256.Sum256([]byte(c.FormData(key)))
 	return hex.EncodeToString(hash[:])
 }
 
+// Hashes the data received from the form with Sha512 and returns it.
 func (c *Context) FormSHA512(key string) string {
 	hash := sha512.Sum512([]byte(c.FormData(key)))
 	return hex.EncodeToString(hash[:])
 }
 
+// Delete returns true if the current request method is DELETE.
 func (c *Context) Delete() bool {
 	return c.Request.Method == http.MethodDelete
 }
 
+// Put returns true if the current request method is PUT.
 func (c *Context) Put() bool {
 	return c.Request.Method == http.MethodPut
 }
 
+// Post returns true if the current request method is POST.
 func (c *Context) Post() bool {
 	return c.Request.Method == http.MethodPost
 }
 
+// Get returns true if the current request method is GET.
 func (c *Context) Get() bool {
 	return c.Request.Method == http.MethodGet
 }
 
+// File serves a file from the given file path to the client.
 func (c *Context) File(filepath string) {
 	http.ServeFile(c.Writer, c.Request, filepath)
 }
 
+// JSONFile serves a JSON file from the given file path with the specified HTTP status code.
+// Returns 404 if the file is not found.
+func (c *Context) JSONFile(status int, filepath string) {
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		http.Error(c.Writer, "file not found", http.StatusNotFound)
+		return
+	}
+
+	c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	c.Writer.WriteHeader(status)
+	c.Writer.Write(data)
+}
+
+// JSONPretty encodes the given data as pretty-printed JSON and writes it to the response
+// with the specified HTTP status code. Optional indent size can be provided.
+func (c *Context) JSONPretty(status int, data interface{}, indent ...int) {
+	ind := 2
+	if len(indent) > 0 {
+		ind = indent[0]
+	}
+
+	bytes, err := json.MarshalIndent(data, "", strings.Repeat(" ", ind))
+	if err != nil {
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Writer.Header().Set("Content-Type", "application/json")
+	c.Writer.WriteHeader(status)
+	c.Writer.Write(bytes)
+}
+
+// JSON encodes the given data as JSON and writes it to the response with the specified HTTP status code.
 func (c *Context) JSON(status int, data interface{}) {
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(status)
 	json.NewEncoder(c.Writer).Encode(data)
 }
 
+// Stringf writes a formatted string to the response with the specified HTTP status code.
 func (c *Context) Stringf(status int, text string, a ...any) {
 	c.Writer.Header().Set("Content-Type", "text/plain")
 	c.Writer.WriteHeader(status)
 	c.Writer.Write([]byte(fmt.Sprintf(text, a...)))
 }
 
+// String writes a plain string to the response with the specified HTTP status code.
 func (c *Context) String(status int, text string) {
 	c.Writer.Header().Set("Content-Type", "text/plain")
 	c.Writer.WriteHeader(status)
