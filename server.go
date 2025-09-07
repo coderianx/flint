@@ -67,16 +67,25 @@ func (s *Server) SetNotFound(handler HandlerFunc) {
 	s.router.notFound = handler
 }
 
-// Server çalıştır
+// Run Server
 func (s *Server) Run(addr ...string) error {
 	port := ":8080"
 	if len(addr) > 0 && strings.TrimSpace(addr[0]) != "" {
 		port = addr[0]
 	}
 
+	// Gösterim için host seçimi
+	host := "localhost"
+	if strings.Contains(port, ":") && !strings.HasPrefix(port, ":") {
+		// Eğer sadece port değil, ip de varsa
+		host = ""
+	}
+
+	displayAddr := host + port
+
 	color.New(color.FgWhite, color.Bold).Println("Flint Server is Starting...")
 	fmt.Println("---------------------------")
-	color.Red("Listening on http://localhost%s", port)
+	color.Red("Listening on http://%s", displayAddr)
 
 	return http.ListenAndServe(port, s.router)
 }
