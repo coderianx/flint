@@ -20,6 +20,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"html/template"
 	"math/rand"
@@ -39,10 +40,43 @@ import (
 // HTTP method checks, and response writers for sending various types of responses.
 // By using Context, developers can easily read input from the client, write output,
 // handle JSON, files, HTML templates, and manage redirects or errors in a structured way.
-
 type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
+	Params  map[string]string
+}
+
+// HTMLString writes the given HTML string directly to the response with the specified HTTP status code.
+func (c *Context) HTMLString(status int, html_code string) {
+	c.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	c.Writer.WriteHeader(status)
+	c.Writer.Write([]byte(html_code))
+}
+
+// Param returns the path parameter value for the given key.
+func (c *Context) Param(key string) string {
+	if c.Params == nil {
+		return ""
+	}
+	return c.Params[key]
+}
+
+func (c *Context) ParamInt(key string) (int, error) {
+	val := c.Param(key)
+	return strconv.Atoi(val)
+}
+
+func (c *Context) ParamIntDefault(key string, defaultVal int) int {
+	val := c.Param(key)
+	if val == "" {
+		return defaultVal
+	}
+	num, err := strconv.Atoi(val)
+	if err != nil {
+		LogError("ParamIntDefault", err.Error())
+		return defaultVal
+	}
+	return num
 }
 
 // UserAgent returns the User-Agent header from the request.
@@ -249,6 +283,46 @@ func (c *Context) JSON(status int, data interface{}) {
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(status)
 	json.NewEncoder(c.Writer).Encode(data)
+}
+
+// XMLPretty serializes the provided Go data structure into a pretty-printed XML
+// and writes it as the response with indentation for readability.
+func (c *Context) XMLPretty(status int, data interface{}) {
+	c.Writer.Header().Set("Content-Type", "application/xml")
+	c.Writer.WriteHeader(status)
+
+	bytes, err := xml.MarshalIndent(data, "", "  ")
+	if err != nil {
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	c.Writer.Write([]byte(xml.Header))
+	c.Writer.Write(bytes)
+}
+
+// XMLFile reads an XML file from the given filepath and writes it as the response.
+// If the file cannot be found, it returns a 404 Not Found error.
+// This is typically used for serving static XML files like sitemap.xml
+func (c *Context) XMLFile(status int, filepath string) {
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		http.Error(c.Writer, "file not found", http.StatusNotFound)
+		return
+	}
+
+	c.Writer.Header().Set("Content-Type", "application/xml; charset=utf-8")
+	c.Writer.WriteHeader(status)
+	c.Writer.Write(data)
+}
+
+// XML serializes the provided Go data structure into XML and writes it as the response.
+// The response Content-Type is set to application/xml.
+// This is typically used for sending dynamic XML generated from structs.
+func (c *Context) XML(status int, data interface{}) {
+	c.Writer.Header().Set("Content-Type", "application/xml")
+	c.Writer.WriteHeader(status)
+	xml.NewEncoder(c.Writer).Encode(data)
 }
 
 // Stringf writes a formatted string to the response with the specified HTTP status code.
