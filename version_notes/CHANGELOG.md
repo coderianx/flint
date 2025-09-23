@@ -1,5 +1,14 @@
 # Changelog
 
+# v1.4
+- Release Date: 2025-09-24
+- Highlights:
+  - New `.env` file support for loading environment variables from a file.
+  - Added Sqlite3 support.
+- Contributors
+    - [Coderianx](./contributors.md)
+- [View Full Notes](./v1.4.md)
+
 # v1.3.2
 - Release Date: 2025-09-7
 - Highlights:
