@@ -1,5 +1,8 @@
 # All Versions
 
+# v1.4
+- Release date : 2025-09-14 (September 24, 2025)
+
 ## v1.3.2
 - Release date : 2025-09-07 (September 7, 2025)
 
