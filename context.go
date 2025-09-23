@@ -134,6 +134,36 @@ func (c *Context) QueryFloat(key string, defaultVal float64) float64 {
 	return num
 }
 
+// FormBool returns the value of a form field as a boolean.
+// Accepts values like "true", "1", "yes" → true
+// and "false", "0", "no" → false. Defaults to false if invalid.
+func (c *Context) FormBool(key string) bool {
+	val := strings.ToLower(strings.TrimSpace(c.FormData(key)))
+	switch val {
+	case "true", "1", "yes", "on":
+		return true
+	case "false", "0", "no", "off":
+		return false
+	default:
+		return false
+	}
+}
+
+// FormFloat returns the value of a form field as a float64.
+// If the conversion fails, it logs the error and returns 0.0.
+func (c *Context) FormFloat(key string) float64 {
+	val := c.FormData(key)
+	if val == "" {
+		return 0.0
+	}
+	num, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		LogError("FormFloat()", err.Error())
+		return 0.0
+	}
+	return num
+}
+
 // It automatically hashes the data received from the form with Argon2.
 func (c *Context) FormArgon2(key string) string {
 	password := c.FormData(key) // formdan şifre al
@@ -173,8 +203,9 @@ func (c *Context) FormBcrypt(key string) string {
 
 // Redirect sends an HTTP redirect to the specified URL with the given status code.
 // Commonly used status codes are 302 (Found), 301 (Moved Permanently), and 307/308.
-func (c *Context) Redirect(status int, url string) {
-	http.Redirect(c.Writer, c.Request, url, status)
+func (c *Context) Redirect(status int, format string, args ...interface{}) {
+	full_url := fmt.Sprintf(format, args...)
+	http.Redirect(c.Writer, c.Request, full_url, status)
 }
 
 // FormFile retrieves the uploaded file and its header from a multipart form
