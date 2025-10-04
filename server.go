@@ -52,14 +52,32 @@ func (s *Server) Delete(path string, handler HandlerFunc) {
 
 // static file server
 func (s *Server) Static(routePath, dir string) {
-	if !strings.HasSuffix(routePath, "/") {
-		routePath += "/"
-	}
+    // routePath sonunda / yoksa ekle
+    if !strings.HasSuffix(routePath, "/") {
+        routePath += "/"
+    }
 
-	s.router.Handle(http.MethodGet, routePath+"*", func(ctx *Context) {
-		http.ServeFile(ctx.Writer, ctx.Request, dir+strings.TrimPrefix(ctx.Request.URL.Path, routePath))
-	})
+    s.router.Handle(http.MethodGet, routePath+"*", func(ctx *Context) {
+        // İstek yolu
+        reqPath := ctx.Request.URL.Path
+
+        // routePath’i kırp
+        relPath := strings.TrimPrefix(reqPath, routePath)
+
+        // Güvenli dosya yolu: dir + relPath
+        fullPath := filepath.Join(dir, relPath)
+
+        // Dosya yoksa 404 dön
+        if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+            http.NotFound(ctx.Writer, ctx.Request)
+            return
+        }
+
+        // ServeFile ile gönder
+        http.ServeFile(ctx.Writer, ctx.Request, fullPath)
+    })
 }
+
 
 // NotFound override
 func (s *Server) SetNotFound(handler HandlerFunc) {
